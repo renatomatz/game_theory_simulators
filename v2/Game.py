@@ -1,8 +1,8 @@
 """
 """
 from multiprocessing import Pool
-import numpy as np
 
+from Environment import Environment
 from Players import Players
 
 
@@ -42,6 +42,9 @@ class NNMatrixGame(Game):
 
         # TODO: check for env/game compatibility
 
+        if run_opts is None:
+            run_opts = {}
+
         self.env=env
         self.players=players
         self.update_strategy=update_strategy
@@ -64,23 +67,14 @@ class NNMatrixGame(Game):
             update_groups = []
             if self.update_strategy == "all":
                 update_groups = [self.players.players]
-            elif self.update_stretegy == "single" 
+            elif self.update_stretegy == "single":
                 update_groups = [[player] for player in self.players.players]
-            elif self.update_stretegy == "groups" 
+            elif self.update_stretegy == "groups":
                 update_groups = self.groups
             
             for group in update_groups:
-
-                with Pool(processes=self.n_jobs if n_jobs is None else n_jobs) as pool:
-
-                    res = pool.map_async(
-                        self.players.optimize,
-                        ((self.env, player, True) for player in group),
-                        lambda x: print(f"Player {x}'s turn") if verbose \
-                            else None
-                    )
-
-                [res.wait() for _ in group]
+                for player in group:
+                    self.players.optimize(self.env, player, cache=True)
 
                 self.players.update()
 

@@ -8,11 +8,11 @@ class Environment:
     def __init__(self):
         raise NotImplementedError()
 
-    def update():
+    def update(self):
         raise NotImplementedError()
 
 
-def NNMatrix(Environment):
+class NNMatrix(Environment):
     """
     """
 
